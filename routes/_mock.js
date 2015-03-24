@@ -12,11 +12,16 @@ exports.getMockTags = function(req, res) {
 	if (req.validationErrors()) {
 		return res.json(400,req.validationErrorsJson());
 	}
-	
+
 	res.status(200);
-    
+
 	// set response body and send
-	res.json(state.tags);
+	res.json({
+		status: 'success',
+		message: null,
+		result: state.tags,
+		version: '0.1.0-preview'
+	});
 };
 
 /*
@@ -30,14 +35,27 @@ exports.postMockTags = function(req, res) {
 	if (req.validationErrors()) {
 		return res.json(400,req.validationErrorsJson());
 	}
-	req.body.id = state.tags.length + 1;
-	
-	state.tags.push(req.body)
+
+	var newTag = req.body;
+	newTag.id = state.tags.length + 1;
+
+	state.tags.push(newTag)
+
+	newTag._links = {
+		self: {
+			href: req.url + '/' + newTag.id
+		}
+	};
 
 	res.status(200);
 
 	// set response body and send
-	res.json({});
+	res.json({
+		status: 'success',
+		message: null,
+		result: newTag,
+		version: '0.1.0-preview'
+	});
 };
 
 /*
@@ -52,16 +70,27 @@ exports.getMockTags2 = function(req, res) {
 	if (req.validationErrors()) {
 		return res.json(400,req.validationErrorsJson());
 	}
-	
+
 	var tag = _.find(state.tags, { 'id': req.params.tagId })
-    
-    if (tag) {
-	    res.status(200);
-        res.json(tag);
-    } else {
-        res.status(404);
-        res.json('not found');
-    }
+
+	if (!tag) {
+		return res.json(404, { status: 'error', message: { mesage: 'User doesnt exist'}, result: null, version: '0.1.0-preview'})
+	}
+
+  res.status(200);
+
+	tag._links = {
+		self: {
+			href: req.url + '/' + newTag.id
+		}
+	};
+
+  res.json({
+		status: 'success',
+		message: null,
+		result: tag,
+		version: '0.1.0-preview'
+	});
 };
 
 /*
@@ -79,7 +108,7 @@ exports.putMockTags = function(req, res) {
 		return res.json(400,req.validationErrorsJson());
 	}
 	var tag = _.find(state.tags, { 'id': req.params.tagId })
-    
+
     if (!tag) {
       return res.json(404, { status: 'error', message: { mesage: 'User doesnt exist'} })
     }
@@ -102,7 +131,7 @@ exports.deleteMockTags = function(req, res) {
 		return res.json(400,req.validationErrorsJson());
 	}
 	var tag = _.find(state.tags, { 'id': req.params.tagId })
-    
+
     if (!tag) {
       return res.json(404, { status: 'error', message: { mesage: 'User doesnt exist'}, result: null})
     }

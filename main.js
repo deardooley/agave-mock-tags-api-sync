@@ -5,9 +5,13 @@
  * This is a mockup of a simple tagging api you can use to create loose associations between platform resources.
  */
 
-state.tags = state.tags || []
+var _mock           = require("./routes/_mock.js"),
+    uuid            = require('node_modules/uuid/uuid.js'),
+    faker           = require('node_modules/faker/faker.min.js'),
+   _dataset         = require("./dataset.js");
 
-var _mock = require("./routes/_mock.js")
+state.tags = state.tags || _dataset.tags();
+state.permissions = state.permissions || _dataset.permissions();
 
 /* Route definition styles:
  *
